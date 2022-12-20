@@ -1,0 +1,59 @@
+spring:
+  application:
+    name: apigatewaybus
+  cloud:
+    gateway:
+      routes:
+        #Example: http://localhost:8775/json/todos  -> if predicate condition is done -> use "uri + path"
+        - id: jsonplaceholder
+          uri: https://jsonplaceholder.typicode.com
+          predicates:
+            - Path=/json/todos/**
+          filters:
+            - RewritePath=/json,/
+        - id: mssecurity
+          uri: http://localhost:9085
+          predicates:
+            - Path=/security/**
+      globalcors:
+        cors-configurations:
+          '[/**]':
+            allowedOrigins:
+              - "*"
+            allowedMethods:
+              - GET
+              - POST
+              - PUT
+              - DELETE
+              - HEAD
+              - OPTIONS
+            allowedHeaders:
+              - Accept
+              - Content-Type
+              - Origin
+              - X-Tenant
+            allowCredentials: false
+        add-to-simple-url-handler-mapping: true
+
+server:
+  port: 8775
+
+eureka:
+  client:
+    serviceUrl:
+      defaultZone: http://localhost:8761/eureka
+
+
+#zuul:
+#  ribbon-isolation-strategy: THREAD
+#  host:
+#    max-total-connections: 500
+#    socket-timeout-millis: 30000
+#    connect-timeout-millis: 30000
+#  routes:
+#    mssecurity:
+#      path: /security/**
+#      serviceId: MS-SECURITY
+#      stripPrefix: false
+#      sensitiveHeaders: Cookie,Set-Cookie
+
